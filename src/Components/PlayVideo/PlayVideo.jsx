@@ -12,9 +12,8 @@ import { value_converter } from "../../data";
 import moment from "moment";
 import { useParams } from "react-router-dom";
 
-
 const PlayVideo = () => {
-    const {videoId} = useParams();
+  const { videoId } = useParams();
   const [apiData, setApiData] = useState(null);
   const [channelData, setChannelData] = useState(null);
   const [commentData, setCommentData] = useState([]);
@@ -37,8 +36,7 @@ const PlayVideo = () => {
     const comment_url = `https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet%2Creplies&maxResults=50&videoId=${videoId}&key=${API_KEY}`;
     await fetch(comment_url)
       .then((res) => res.json())
-      .then((data) => setCommentData(data.items[0]));
-      console.log(commentData);
+      .then((data) => setCommentData(data.items));
   };
 
   useEffect(() => {
@@ -46,7 +44,7 @@ const PlayVideo = () => {
   }, [videoId]);
 
   useEffect(() => {
-    fetchOtherData();
+    if (apiData) fetchOtherData();
   }, [apiData]);
 
   return (
@@ -57,7 +55,7 @@ const PlayVideo = () => {
         frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         referrerPolicy="strict-origin-when-cross-origin"
-        allowfullscreen
+        allowFullScreen
       ></iframe>
       <h3>{apiData ? apiData.snippet.title : "Title Here"}</h3>
       <div className="play-video-info">
@@ -115,22 +113,29 @@ const PlayVideo = () => {
         {commentData.map((item, index) => {
           return (
             <div key={index} className="comment">
-              <img src={item.snippet.topLevelComment.snippet.authorProfileImageUrl} alt="" />
+              <img
+                src={item.snippet.topLevelComment.snippet.authorProfileImageUrl}
+                alt=""
+              />
               <div>
                 <h3>
-                  {item.snippet.topLevelComment.snippet.authorDisplayName}<span>1 day ago</span>
+                  {item.snippet.topLevelComment.snippet.authorDisplayName}
+                  <span>1 day ago</span>
                 </h3>
-                <p>
-                  {item.snippet.topLevelComment.snippet.textDisplay}
-                </p>
+                <p>{item.snippet.topLevelComment.snippet.textDisplay}</p>
                 <div className="comment-action">
-                  <img src={value_converter(item.snippet.topLevelComment.snippet.likeCount)} alt="" />
+                  <img
+                    src={value_converter(
+                      item.snippet.topLevelComment.snippet.likeCount
+                    )}
+                    alt=""
+                  />
                   <span>244</span>
                   <img src={dislike} alt="" />
                 </div>
               </div>
             </div>
-          )
+          );
         })}
       </div>
     </div>
